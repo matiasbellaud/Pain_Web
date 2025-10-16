@@ -14,7 +14,7 @@ export default function ChatMessage({ role, content }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        'flex gap-4 p-4 group hover:bg-muted/50 transition-colors',
+        'flex gap-4 p-4 group hover:bg-muted/50 rounded-lg transition-colors',
         isUser ? 'bg-background' : 'bg-muted/20'
       )}
     >

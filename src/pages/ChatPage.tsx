@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Layout from "@/components/layout/Layout";
 import ChatMessage from '@/components/chat/ChatMessage';
 import ChatInput from '@/components/chat/ChatInput';
+import MetricsWidget from '@/components/MetricsWidget';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Trash2, AlertCircle } from 'lucide-react';
@@ -15,13 +16,7 @@ interface Message {
 }
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Bonjour ! Je suis votre assistant culinaire propulsé par Ollama. Posez-moi vos questions sur les recettes, les techniques de cuisine, ou demandez-moi des idées de repas !'
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>();
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -40,7 +35,7 @@ export default function ChatPage() {
       content
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [userMessage]);
     setIsTyping(true);
     setError(null);
 
@@ -54,7 +49,7 @@ export default function ChatPage() {
         content: response
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages(prev => [assistantMessage]);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Une erreur inconnue s\'est produite';
       setError(errorMessage);
@@ -65,7 +60,7 @@ export default function ChatPage() {
         content: `❌ Erreur : ${errorMessage}`
       };
 
-      setMessages(prev => [...prev, errorResponse]);
+      setMessages(prev => [errorResponse]);
     } finally {
       setIsTyping(false);
     }
@@ -85,34 +80,13 @@ export default function ChatPage() {
 
   return (
     <Layout>
+      <MetricsWidget />
       <motion.div
-        className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto"
+        className="flex flex-col h-[calc(100vh-4rem)]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Header */}
-        <motion.div
-          className="flex items-center justify-between p-4 border-b"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <div>
-            <h1 className="text-2xl font-bold">Chat Assistant Culinaire</h1>
-            <p className="text-sm text-muted-foreground">Propulsé par Ollama</p>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleClearChat}
-            className="gap-2"
-          >
-            <Trash2 className="h-4 w-4" />
-            Effacer
-          </Button>
-        </motion.div>
-
         {/* Error Banner */}
         {error && (
           <motion.div
@@ -127,10 +101,10 @@ export default function ChatPage() {
         )}
 
         {/* Messages */}
-        <ScrollArea className="flex-1 px-4">
+        <ScrollArea className="flex-1 px-4 max-w-4xl mx-auto">
           <div ref={scrollRef} className="space-y-1">
             <AnimatePresence initial={false}>
-              {messages.map((message) => (
+              {messages?.map((message) => (
                 <motion.div
                   key={message.id}
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -164,7 +138,7 @@ export default function ChatPage() {
 
         {/* Input */}
         <motion.div
-          className="border-t p-4 bg-background"
+          className=""
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}

@@ -27,16 +27,16 @@ export default function ChatInput({ onSendMessage, disabled = false }: ChatInput
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex gap-2 max-w-4xl mx-auto">
       <Input
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Écrivez votre message..."
         disabled={disabled}
-        className="flex-1"
+        className="flex-1 rounded-lg"
       />
-      <Button type="submit" disabled={disabled || !message.trim()} size="icon">
+      <Button type="submit" disabled={disabled || !message.trim()} size="icon" className="rounded-lg">
         <Send className="h-4 w-4" />
       </Button>
     </form>
