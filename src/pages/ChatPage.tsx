@@ -4,8 +4,9 @@ import ChatMessage from '@/components/chat/ChatMessage';
 import ChatInput from '@/components/chat/ChatInput';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ollamaService } from '@/services/ollama';
 
 interface Message {
   id: string;
@@ -18,10 +19,11 @@ export default function ChatPage() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Bonjour ! Comment puis-je vous aider aujourd\'hui ?'
+      content: 'Bonjour ! Je suis votre assistant culinaire propulsé par Ollama. Posez-moi vos questions sur les recettes, les techniques de cuisine, ou demandez-moi des idées de repas !'
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll vers le bas quand un nouveau message arrive
@@ -31,7 +33,7 @@ export default function ChatPage() {
     }
   }, [messages]);
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -40,17 +42,33 @@ export default function ChatPage() {
 
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
+    setError(null);
 
-    // Simuler une réponse de l'assistant
-    setTimeout(() => {
+    try {
+      // Envoyer le message à Ollama
+      const response = await ollamaService.generate(content);
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Vous avez dit : "${content}"\n\nC'est une simulation de réponse. Pour intégrer une vraie IA, vous pouvez utiliser l'API d'OpenAI, Anthropic Claude, ou tout autre service de chatbot.`
+        content: response
       };
+
       setMessages(prev => [...prev, assistantMessage]);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Une erreur inconnue s\'est produite';
+      setError(errorMessage);
+
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `❌ Erreur : ${errorMessage}`
+      };
+
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1000);
+    }
   };
 
   const handleClearChat = () => {
@@ -58,9 +76,11 @@ export default function ChatPage() {
       {
         id: '1',
         role: 'assistant',
-        content: 'Bonjour ! Comment puis-je vous aider aujourd\'hui ?'
+        content: 'Bonjour ! Je suis votre assistant culinaire propulsé par Ollama. Posez-moi vos questions sur les recettes, les techniques de cuisine, ou demandez-moi des idées de repas !'
       }
     ]);
+    setError(null);
+    ollamaService.resetContext();
   };
 
   return (
@@ -78,7 +98,10 @@ export default function ChatPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <h1 className="text-2xl font-bold">Chat Assistant</h1>
+          <div>
+            <h1 className="text-2xl font-bold">Chat Assistant Culinaire</h1>
+            <p className="text-sm text-muted-foreground">Propulsé par Ollama</p>
+          </div>
           <Button
             variant="outline"
             size="sm"
@@ -89,6 +112,19 @@ export default function ChatPage() {
             Effacer
           </Button>
         </motion.div>
+
+        {/* Error Banner */}
+        {error && (
+          <motion.div
+            className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 flex items-center gap-2"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <AlertCircle className="h-4 w-4" />
+            <span className="text-sm">{error}</span>
+          </motion.div>
+        )}
 
         {/* Messages */}
         <ScrollArea className="flex-1 px-4">
