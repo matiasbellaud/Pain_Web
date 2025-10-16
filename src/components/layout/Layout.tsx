@@ -1,14 +1,11 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Navigation from '@/components/layout/Navigation';
+import React, {ReactNode} from 'react';
 
-export default function Layout() {
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Navigation />
-      <main className="container mx-auto p-8">
-        <Outlet />
-      </main>
+    <div>
+        <main>
+            {children}
+        </main>
     </div>
   );
 }
