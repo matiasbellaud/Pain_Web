@@ -1,70 +1,91 @@
-# Getting Started with Create React App
+# Pain_Api
+Application de recettes proposées par IA (API)
+# pAIn — Recettes intelligentes par IA
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Concept
+pAIn est une application web qui génère des recettes personnalisées à partir d’une liste d’ingrédients fournie par l’utilisateur. L’objectif est de réduire le gaspillage alimentaire et de simplifier la cuisine quotidienne en proposant des recettes pertinentes basées sur ce qui est disponible chez soi.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Fonctionnement
+1. L’utilisateur saisit une liste d’ingrédients (prompt).
+2. Le backend (FastAPI) envoie le prompt à un modèle LLaMA3 exécuté localement via Ollama.
+3. Le modèle renvoie une ou plusieurs recettes contenant :
+   - **Nom de la recette**
+   - **Durée estimée**
+   - **Difficulté**
+   - **Liste d’ingrédients**
+   - **Étapes détaillées**
+4. Le frontend (React) récupère et affiche les recettes. L’utilisateur peut dérouler les étapes pour suivre la préparation.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Fonctionnalités développées
+- Interface utilisateur simple pour saisir des ingrédients.
+- Intégration LLaMA3 via Ollama (exécution locale).
+- Génération dynamique de recettes selon le prompt.
+- Affichage des recettes avec déroulement des étapes.
+- Mesure de la consommation des ressources via psutil sur le backend.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Technologies utilisées
+- **Frontend** : React.js
+- **Backend** : Python (FastAPI) 
+- **IA** : LLaMA3 via Ollama (local)
+- **Monitoring** : psutil (mesure CPU/mémoire)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Python est aujourd’hui la langue principale de l’écosystème IA, et offre une intégration fluide avec les outils de machine learning.
 
-### `npm run build`
+FrontEnd en react tout les membres de l'équipe avait des compétences techniques sur la technologie.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Lancer l’application
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Prérequis
+- **Python 3.10+**
+- **Node.js 18+**
+- **Ollama installé** et le modèle llama3 téléchargé
+- **pipenv ou venv** (gestion d’environnement Python)
 
-### `npm run eject`
+### Backend (FastAPI)
+Commande : 
+- **pip install -r requirements.txt**
+- **python -m uvicorn main:app --reload --port 4000**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Assurez-vous qu’Ollama est lancé et que le modèle est chargé : **ollama run llama3**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Frontend (React)
+Commande : 
+- **npm install**
+- **npm start**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+L’application sera disponible sur [http://localhost:3000](http://localhost:3000).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## Mesure approximative pour une session de génération (~30s)
+- **CPU moyen** : ~65%
+- **Mémoire utilisée** : ~2.3 GB
+- **Temps d’exécution** : ~10s
+- **Consommation estimée** : ~15–20 Wh (pour la génération)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Comparaison
+Microsoft Word (30 minutes d’édition simple) ≈ 5–7 Wh.  
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**Conclusion** : l’inférence IA locale consomme significativement plus d’énergie, malgré l’avantage de garder les données en local.
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Limites actuelles
+- L’IA peut produire des recettes incohérentes ou imprécises.
+- Pas de système de feedback utilisateur pour améliorer les résultats.
+- Pas d’historique des recettes générées.
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Équipe
+- Maxence MAHIEU
+- Mathéo HAMON
+- Matias BELLAUD
