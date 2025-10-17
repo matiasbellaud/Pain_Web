@@ -3,6 +3,11 @@ Application de recettes proposées par IA (API)
 # pAIn — Recettes intelligentes par IA
 
 ## Concept
+
+Aujourd'hui, beaucoup de personnes ont du mal à faire des plats avec les ingrédients restants de leur frigo, il est plus facile d'appeler Uber Eats que de chercher des recettes et de cuisiner.
+
+C'est pour cela que nous avons créée pAIn !
+
 pAIn est une application web qui génère des recettes personnalisées à partir d’une liste d’ingrédients fournie par l’utilisateur. L’objectif est de réduire le gaspillage alimentaire et de simplifier la cuisine quotidienne en proposant des recettes pertinentes basées sur ce qui est disponible chez soi.
 
 ---
@@ -30,14 +35,20 @@ pAIn est une application web qui génère des recettes personnalisées à partir
 ---
 
 ## Technologies utilisées
-- **Frontend** : React.js
+- **Frontend** : ReactJs
+
+FrontEnd en ReactJs car tout les membres de l'équipe avait des compétences techniques sur la technologie.
+
 - **Backend** : Python (FastAPI) 
-- **IA** : LLaMA3 via Ollama (local marche sans connexion internet)
-- **Monitoring** : psutil (mesure CPU/mémoire)
 
 Python est aujourd’hui la langue principale de l’écosystème IA, et offre une intégration fluide avec les outils de machine learning.
 
-FrontEnd en react tout les membres de l'équipe avait des compétences techniques sur la technologie.
+- **IA** : LLaMA3 via Ollama (local marche sans connexion internet)
+
+LLama3 est un model de données puissant, open source, légé et de source fiable (Meta) pour un server.
+Ollama simplifie le déploiement des modèles LLM localement, avec une interface CLI/API facile à intégrer.
+
+- **Monitoring** : psutil (mesure CPU/mémoire)
 
 ---
 
