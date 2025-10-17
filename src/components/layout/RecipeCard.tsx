@@ -19,20 +19,27 @@ const RecipeCard = ({
 
   return (
     <div
-      className="max-w-md mx-auto my-6 bg-white rounded-xl shadow-md border border-gray-200 transition-all duration-300"
+      className="max-w-full my-3 bg-card/50 backdrop-blur-sm rounded-2xl shadow-sm border border-border/50 transition-all duration-300 hover:shadow-md overflow-hidden"
     >
       <div
-        className="flex justify-between items-start p-4 cursor-pointer"
+        className="flex justify-between items-start p-4 cursor-pointer hover:bg-muted/30 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
-          <div className="text-sm text-gray-500 mt-1">
-            ⏱ {time} &nbsp;•&nbsp; 🔥 {difficulty}
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold text-foreground mb-2">{title}</h2>
+          <div className="flex gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <span className="text-base">⏱</span>
+              {time}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="text-base">🔥</span>
+              {difficulty}
+            </span>
           </div>
         </div>
         <div
-          className={`text-gray-600 transform transition-transform duration-300 ${
+          className={`text-muted-foreground transform transition-transform duration-300 ml-2 ${
             isOpen ? 'rotate-180' : ''
           }`}
         >
@@ -41,21 +48,35 @@ const RecipeCard = ({
       </div>
 
       {isOpen && (
-        <div className="px-4 pb-4">
-          <div className="mb-4">
-            <h3 className="text-lg font-medium text-gray-700 mb-2">🧂 Ingrédients</h3>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
+        <div className="px-4 pb-4 border-t border-border/30">
+          <div className="pt-4 mb-4">
+            <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+              <span className="text-base">🧂</span>
+              Ingrédients
+            </h3>
+            <ul className="space-y-2">
               {ingredients.map((item, index) => (
-                <li key={index}>{item}</li>
+                <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>{item}</span>
+                </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-medium text-gray-700 mb-2">👨‍🍳 Étapes</h3>
-            <ol className="list-decimal list-inside text-gray-600 space-y-1">
+            <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+              <span className="text-base">👨‍🍳</span>
+              Étapes
+            </h3>
+            <ol className="space-y-3">
               {steps.map((step, index) => (
-                <li key={index}>{step}</li>
+                <li key={index} className="text-sm text-muted-foreground flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold">
+                    {index + 1}
+                  </span>
+                  <span className="flex-1 pt-0.5">{step}</span>
+                </li>
               ))}
             </ol>
           </div>

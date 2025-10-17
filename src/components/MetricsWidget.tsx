@@ -31,23 +31,23 @@ const MetricsWidget: React.FC = () => {
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden"
+      className="fixed top-4 right-4 z-50 bg-card/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 overflow-hidden"
       style={{ minWidth: '280px', maxWidth: '320px' }}
     >
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/40 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-gray-600" />
-          <span className="font-semibold text-gray-800 text-sm">Métriques Système</span>
+          <Activity className="w-4 h-4 text-primary" />
+          <span className="font-semibold text-foreground text-sm">Métriques Système</span>
           <div className={`w-2 h-2 rounded-full ${getStatusColor()}`} />
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-gray-600" />
+          <ChevronUp className="w-4 h-4 text-muted-foreground" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-600" />
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
         )}
       </button>
 
@@ -61,23 +61,23 @@ const MetricsWidget: React.FC = () => {
             transition={{ duration: 0.2 }}
           >
             {metrics && metrics.cpu && metrics.memory && metrics.disk ? (
-              <div className="px-4 py-3 border-t border-gray-100 space-y-3">
+              <div className="px-4 py-3 border-t border-border/30 space-y-3">
                 {/* CPU */}
                 <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-medium text-gray-600">CPU</span>
-                    <span className="text-xs font-bold text-gray-900">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-xs font-medium text-muted-foreground">CPU</span>
+                    <span className="text-xs font-bold text-foreground">
                       {metrics.cpu.percent_total.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="w-full bg-muted/50 rounded-full h-2 overflow-hidden">
                     <div
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                      className={`h-2 rounded-full transition-all duration-300 ${
                         metrics.cpu.percent_total < 50
-                          ? 'bg-green-500'
+                          ? 'bg-gradient-to-r from-green-500 to-green-400'
                           : metrics.cpu.percent_total < 80
-                          ? 'bg-orange-500'
-                          : 'bg-red-500'
+                          ? 'bg-gradient-to-r from-orange-500 to-orange-400'
+                          : 'bg-gradient-to-r from-red-500 to-red-400'
                       }`}
                       style={{ width: `${Math.min(metrics.cpu.percent_total, 100)}%` }}
                     />
@@ -86,20 +86,20 @@ const MetricsWidget: React.FC = () => {
 
                 {/* Memory */}
                 <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-medium text-gray-600">Mémoire</span>
-                    <span className="text-xs font-bold text-gray-900">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-xs font-medium text-muted-foreground">Mémoire</span>
+                    <span className="text-xs font-bold text-foreground">
                       {formatBytes(metrics.memory.used_mb)} / {formatBytes(metrics.memory.total_mb)}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="w-full bg-muted/50 rounded-full h-2 overflow-hidden">
                     <div
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                      className={`h-2 rounded-full transition-all duration-300 ${
                         metrics.memory.percent < 50
-                          ? 'bg-green-500'
+                          ? 'bg-gradient-to-r from-green-500 to-green-400'
                           : metrics.memory.percent < 80
-                          ? 'bg-orange-500'
-                          : 'bg-red-500'
+                          ? 'bg-gradient-to-r from-orange-500 to-orange-400'
+                          : 'bg-gradient-to-r from-red-500 to-red-400'
                       }`}
                       style={{ width: `${Math.min(metrics.memory.percent, 100)}%` }}
                     />
@@ -108,20 +108,20 @@ const MetricsWidget: React.FC = () => {
 
                 {/* Disk */}
                 <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-medium text-gray-600">Disque</span>
-                    <span className="text-xs font-bold text-gray-900">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-xs font-medium text-muted-foreground">Disque</span>
+                    <span className="text-xs font-bold text-foreground">
                       {metrics.disk.used_gb.toFixed(1)} GB / {metrics.disk.total_gb.toFixed(1)} GB
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="w-full bg-muted/50 rounded-full h-2 overflow-hidden">
                     <div
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                      className={`h-2 rounded-full transition-all duration-300 ${
                         metrics.disk.percent < 50
-                          ? 'bg-green-500'
+                          ? 'bg-gradient-to-r from-green-500 to-green-400'
                           : metrics.disk.percent < 80
-                          ? 'bg-orange-500'
-                          : 'bg-red-500'
+                          ? 'bg-gradient-to-r from-orange-500 to-orange-400'
+                          : 'bg-gradient-to-r from-red-500 to-red-400'
                       }`}
                       style={{ width: `${Math.min(metrics.disk.percent, 100)}%` }}
                     />
@@ -130,17 +130,17 @@ const MetricsWidget: React.FC = () => {
 
                 {/* Process info */}
                 {metrics.process && (
-                  <div className="pt-2 border-t border-gray-100">
-                    <div className="text-xs text-gray-600 space-y-1">
-                      <div className="flex justify-between">
+                  <div className="pt-2 border-t border-border/30">
+                    <div className="text-xs text-muted-foreground space-y-1.5">
+                      <div className="flex justify-between items-center">
                         <span>Process CPU:</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-foreground">
                           {metrics.process.cpu_percent.toFixed(1)}%
                         </span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span>Process RAM:</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-foreground">
                           {formatBytes(metrics.process.memory_mb)}
                         </span>
                       </div>
@@ -149,21 +149,21 @@ const MetricsWidget: React.FC = () => {
                 )}
 
                 {/* Timestamp */}
-                <div className="text-xs text-gray-400 text-center pt-2 border-t border-gray-100">
+                <div className="text-xs text-muted-foreground/60 text-center pt-2 border-t border-border/30">
                   Mis à jour: {new Date(metrics.timestamp * 1000).toLocaleTimeString('fr-FR')}
                 </div>
               </div>
             ) : status === 'connecting' ? (
               <div className="px-4 py-6 text-center">
-                <div className="text-sm text-gray-500">Connexion...</div>
+                <div className="text-sm text-muted-foreground">Connexion...</div>
               </div>
             ) : status === 'error' ? (
               <div className="px-4 py-6 text-center">
-                <div className="text-sm text-red-500">Erreur de connexion</div>
+                <div className="text-sm text-destructive">Erreur de connexion</div>
               </div>
             ) : (
               <div className="px-4 py-6 text-center">
-                <div className="text-sm text-gray-500">En attente de données...</div>
+                <div className="text-sm text-muted-foreground">En attente de données...</div>
               </div>
             )}
           </motion.div>

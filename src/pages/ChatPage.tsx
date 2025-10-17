@@ -90,7 +90,7 @@ export default function ChatPage() {
       content
     };
 
-    setMessages(prev => [userMessage]);
+    setMessages(prev => [...(prev || []), userMessage]);
     setIsTyping(true);
     setError(null);
 
@@ -108,7 +108,7 @@ export default function ChatPage() {
           recipes: recipeResponse.recipes
         };
 
-        setMessages(prev => [assistantMessage]);
+        setMessages(prev => [...(prev || []), assistantMessage]);
       } else {
         const response = await ollamaService.generate(content);
         const parsedResponse = parseRecipeResponse(response);
@@ -120,7 +120,7 @@ export default function ChatPage() {
           recipes: parsedResponse.recipes
         };
 
-        setMessages(prev => [assistantMessage]);
+        setMessages(prev => [...(prev || []), assistantMessage]);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Une erreur inconnue s\'est produite';
@@ -132,7 +132,7 @@ export default function ChatPage() {
         content: `❌ Erreur : ${errorMessage}`
       };
 
-      setMessages(prev => [errorResponse]);
+      setMessages(prev => [...(prev || []), errorResponse]);
     } finally {
       setIsTyping(false);
     }
@@ -160,7 +160,7 @@ export default function ChatPage() {
           </motion.div>
         )}
 
-        <ScrollArea className="flex-1 px-4 max-w-4xl mx-auto">
+        <ScrollArea className="flex-1 px-4 max-w-4xl w-full mx-auto">
           <div ref={scrollRef} className="space-y-1">
             <AnimatePresence initial={false}>
               {messages?.map((message) => (
