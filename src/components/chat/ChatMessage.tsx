@@ -9,10 +9,19 @@ interface ChatMessageProps {
   role: 'user' | 'assistant';
   content: string;
   recipes?: Recipe[];
+  timestamp?: Date;
 }
 
-export default function ChatMessage({ role, content, recipes }: ChatMessageProps) {
+export default function ChatMessage({ role, content, recipes, timestamp }: ChatMessageProps) {
   const isUser = role === 'user';
+
+  const formatTime = (date?: Date) => {
+    if (!date) return '';
+    return new Date(date).toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
     <div
@@ -35,10 +44,17 @@ export default function ChatMessage({ role, content, recipes }: ChatMessageProps
         isUser ? 'items-end' : 'items-start'
       )}>
         <div className={cn(
-          'font-semibold text-xs opacity-70',
-          isUser ? 'text-right' : 'text-left'
+          'flex items-center gap-2 text-xs opacity-70',
+          isUser ? 'flex-row-reverse' : 'flex-row'
         )}>
-          {isUser ? 'Vous' : 'Assistant'}
+          <span className="font-semibold">
+            {isUser ? 'Vous' : 'Assistant'}
+          </span>
+          {timestamp && (
+            <span className="text-muted-foreground/60">
+              {formatTime(timestamp)}
+            </span>
+          )}
         </div>
         <div className={cn(
           'rounded-2xl px-4 py-3 shadow-sm transition-all hover:shadow-md',
