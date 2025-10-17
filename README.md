@@ -3,6 +3,11 @@ Application de recettes proposées par IA (API)
 # pAIn — Recettes intelligentes par IA
 
 ## Concept
+
+Aujourd'hui, beaucoup de personnes ont du mal à faire des plats avec les ingrédients restants de leur frigo, il est plus facile d'appeler Uber Eats que de chercher des recettes et de cuisiner.
+
+C'est pour cela que nous avons créée pAIn !
+
 pAIn est une application web qui génère des recettes personnalisées à partir d’une liste d’ingrédients fournie par l’utilisateur. L’objectif est de réduire le gaspillage alimentaire et de simplifier la cuisine quotidienne en proposant des recettes pertinentes basées sur ce qui est disponible chez soi.
 
 ---
