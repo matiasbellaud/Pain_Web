@@ -14,6 +14,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   recipes?: Recipe[];
+  timestamp: Date;
 }
 
 export default function ChatPage() {
@@ -87,10 +88,11 @@ export default function ChatPage() {
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content
+      content,
+      timestamp: new Date()
     };
 
-    setMessages(prev => [userMessage]);
+    setMessages(prev => [...(prev || []), userMessage]);
     setIsTyping(true);
     setError(null);
 
@@ -105,10 +107,11 @@ export default function ChatPage() {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content: `Voici ${recipeResponse.recipes.length} recette${recipeResponse.recipes.length > 1 ? 's' : ''} que vous pouvez préparer avec ${ingredients.join(', ')} :`,
-          recipes: recipeResponse.recipes
+          recipes: recipeResponse.recipes,
+          timestamp: new Date()
         };
 
-        setMessages(prev => [assistantMessage]);
+        setMessages(prev => [...(prev || []), assistantMessage]);
       } else {
         const response = await ollamaService.generate(content);
         const parsedResponse = parseRecipeResponse(response);
@@ -117,10 +120,11 @@ export default function ChatPage() {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content: parsedResponse.content,
-          recipes: parsedResponse.recipes
+          recipes: parsedResponse.recipes,
+          timestamp: new Date()
         };
 
-        setMessages(prev => [assistantMessage]);
+        setMessages(prev => [...(prev || []), assistantMessage]);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Une erreur inconnue s\'est produite';
@@ -129,10 +133,11 @@ export default function ChatPage() {
       const errorResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `❌ Erreur : ${errorMessage}`
+        content: `❌ Erreur : ${errorMessage}`,
+        timestamp: new Date()
       };
 
-      setMessages(prev => [errorResponse]);
+      setMessages(prev => [...(prev || []), errorResponse]);
     } finally {
       setIsTyping(false);
     }
@@ -160,7 +165,7 @@ export default function ChatPage() {
           </motion.div>
         )}
 
-        <ScrollArea className="flex-1 px-4 max-w-4xl mx-auto">
+        <ScrollArea className="flex-1 px-4 max-w-4xl w-full mx-auto">
           <div ref={scrollRef} className="space-y-1">
             <AnimatePresence initial={false}>
               {messages?.map((message) => (
@@ -177,6 +182,7 @@ export default function ChatPage() {
                     role={message.role}
                     content={message.content}
                     recipes={message.recipes}
+                    timestamp={message.timestamp}
                   />
                 </motion.div>
               ))}
