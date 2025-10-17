@@ -2,13 +2,16 @@ import React from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Bot, User } from 'lucide-react';
+import RecipeCard from '@/components/layout/RecipeCard';
+import { Recipe } from '@/types/recipe';
 
 interface ChatMessageProps {
   role: 'user' | 'assistant';
   content: string;
+  recipes?: Recipe[];
 }
 
-export default function ChatMessage({ role, content }: ChatMessageProps) {
+export default function ChatMessage({ role, content, recipes }: ChatMessageProps) {
   const isUser = role === 'user';
 
   return (
@@ -32,6 +35,27 @@ export default function ChatMessage({ role, content }: ChatMessageProps) {
         <div className="text-sm leading-relaxed whitespace-pre-wrap">
           {content}
         </div>
+        {recipes && recipes.length > 0 && (
+          <div className="mt-4 space-y-4">
+            {recipes.map((recipe, index) => {
+              const totalTime = recipe.prep_time_minutes + recipe.cook_time_minutes;
+              const ingredientsList = recipe.ingredients.map(
+                ing => `${ing.quantity} ${ing.unit} ${ing.name}`
+              );
+
+              return (
+                <RecipeCard
+                  key={index}
+                  title={recipe.name}
+                  time={`${totalTime} min (préparation: ${recipe.prep_time_minutes} min, cuisson: ${recipe.cook_time_minutes} min)`}
+                  difficulty={`${recipe.servings} portion${recipe.servings > 1 ? 's' : ''}`}
+                  ingredients={ingredientsList}
+                  steps={recipe.steps}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

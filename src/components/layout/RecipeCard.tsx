@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 
+interface RecipeCardProps {
+  title?: string;
+  time?: string;
+  difficulty?: string;
+  ingredients?: string[];
+  steps?: string[];
+}
+
 const RecipeCard = ({
   title = "Titre inconnu",
   time = "Temps inconnu",
   difficulty = "N/A",
   ingredients = [],
   steps = []
-}) => {
+}: RecipeCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

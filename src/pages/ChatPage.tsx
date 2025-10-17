@@ -4,15 +4,16 @@ import ChatMessage from '@/components/chat/ChatMessage';
 import ChatInput from '@/components/chat/ChatInput';
 import MetricsWidget from '@/components/MetricsWidget';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
-import { Trash2, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ollamaService } from '@/services/ollama';
+import { Recipe } from '@/types/recipe';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  recipes?: Recipe[];
 }
 
 export default function ChatPage() {
@@ -21,12 +22,66 @@ export default function ChatPage() {
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll vers le bas quand un nouveau message arrive
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const extractIngredients = (message: string): string[] => {
+    const commonIngredients = [
+      'oeuf', 'oeufs', 'jambon', 'fromage', 'lait', 'beurre', 'farine', 'sucre',
+      'tomate', 'tomates', 'oignon', 'oignons', 'ail', 'poulet', 'viande',
+      'poisson', 'pâtes', 'riz', 'pain', 'salade', 'carotte', 'carottes',
+      'pomme de terre', 'pommes de terre', 'courgette', 'courgettes',
+      'poivron', 'poivrons', 'champignon', 'champignons', 'pâte', 'pasta'
+    ];
+
+    const messageLower = message.toLowerCase();
+    const foundIngredients: string[] = [];
+
+    for (const ingredient of commonIngredients) {
+      if (messageLower.includes(ingredient)) {
+        foundIngredients.push(ingredient);
+      }
+    }
+
+    return foundIngredients;
+  };
+
+  const isRecipeRequest = (message: string): boolean => {
+    const recipeKeywords = [
+      'recette', 'cuisiner', 'préparer', 'faire', 'j\'ai',
+      'avec', 'ingrédient', 'plat', 'repas', 'manger'
+    ];
+
+    const messageLower = message.toLowerCase();
+    return recipeKeywords.some(keyword => messageLower.includes(keyword));
+  };
+
+  const parseRecipeResponse = (response: string): { content: string; recipes?: Recipe[] } => {
+    try {
+      const jsonMatch = response.match(/\{[\s\S]*"recipes"[\s\S]*\}/);
+      if (jsonMatch) {
+        const jsonStr = jsonMatch[0];
+        const recipeData = JSON.parse(jsonStr);
+
+        if (recipeData.recipes && Array.isArray(recipeData.recipes)) {
+          const textContent = response.replace(jsonStr, '').trim();
+          const displayContent = textContent || 'Voici les recettes que j\'ai trouvées pour vous :';
+
+          return {
+            content: displayContent,
+            recipes: recipeData.recipes
+          };
+        }
+      }
+    } catch (e) {
+      console.log('No recipe JSON found in response');
+    }
+
+    return { content: response };
+  };
 
   const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
@@ -40,16 +95,33 @@ export default function ChatPage() {
     setError(null);
 
     try {
-      // Envoyer le message à Ollama
-      const response = await ollamaService.generate(content);
+      const shouldUseRecipeAPI = isRecipeRequest(content);
+      const ingredients = shouldUseRecipeAPI ? extractIngredients(content) : [];
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response
-      };
+      if (shouldUseRecipeAPI && ingredients.length > 0) {
+        const recipeResponse = await ollamaService.generateRecipes(ingredients, 3);
 
-      setMessages(prev => [assistantMessage]);
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `Voici ${recipeResponse.recipes.length} recette${recipeResponse.recipes.length > 1 ? 's' : ''} que vous pouvez préparer avec ${ingredients.join(', ')} :`,
+          recipes: recipeResponse.recipes
+        };
+
+        setMessages(prev => [assistantMessage]);
+      } else {
+        const response = await ollamaService.generate(content);
+        const parsedResponse = parseRecipeResponse(response);
+
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: parsedResponse.content,
+          recipes: parsedResponse.recipes
+        };
+
+        setMessages(prev => [assistantMessage]);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Une erreur inconnue s\'est produite';
       setError(errorMessage);
@@ -66,17 +138,6 @@ export default function ChatPage() {
     }
   };
 
-  const handleClearChat = () => {
-    setMessages([
-      {
-        id: '1',
-        role: 'assistant',
-        content: 'Bonjour ! Je suis votre assistant culinaire propulsé par Ollama. Posez-moi vos questions sur les recettes, les techniques de cuisine, ou demandez-moi des idées de repas !'
-      }
-    ]);
-    setError(null);
-    ollamaService.resetContext();
-  };
 
   return (
     <Layout>
@@ -87,7 +148,6 @@ export default function ChatPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Error Banner */}
         {error && (
           <motion.div
             className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 flex items-center gap-2"
@@ -100,7 +160,6 @@ export default function ChatPage() {
           </motion.div>
         )}
 
-        {/* Messages */}
         <ScrollArea className="flex-1 px-4 max-w-4xl mx-auto">
           <div ref={scrollRef} className="space-y-1">
             <AnimatePresence initial={false}>
@@ -117,6 +176,7 @@ export default function ChatPage() {
                   <ChatMessage
                     role={message.role}
                     content={message.content}
+                    recipes={message.recipes}
                   />
                 </motion.div>
               ))}
@@ -136,7 +196,6 @@ export default function ChatPage() {
           </div>
         </ScrollArea>
 
-        {/* Input */}
         <motion.div
           className=""
           initial={{ opacity: 0, y: 20 }}

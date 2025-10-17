@@ -1,9 +1,9 @@
 import axios from 'axios';
+import { RecipeResponse } from '@/types/recipe';
 
-// Utilise le proxy configuré dans package.json
-// Les requêtes à /api/* sont automatiquement redirigées vers http://127.0.0.1:4000
 const OLLAMA_API_URL = '/api/ask';
-const DEFAULT_MODEL = 'llama3'; // Modèle par défaut (sans tag, comme dans l'API Python)
+const RECIPE_API_URL = '/api/recipe';
+const DEFAULT_MODEL = 'llama3';
 
 export interface OllamaMessage {
   role: 'user' | 'assistant' | 'system';
@@ -31,6 +31,12 @@ export interface OllamaGenerateResponse {
   eval_duration?: number;
 }
 
+export interface RecipeRequest {
+  ingredients: string[];
+  number_of_recipes?: number;
+  dietary_restrictions?: string;
+}
+
 export class OllamaService {
   private model: string;
   private context: number[] = [];
@@ -39,9 +45,6 @@ export class OllamaService {
     this.model = model;
   }
 
-  /**
-   * Envoie un prompt à Ollama et retourne la réponse
-   */
   async generate(prompt: string): Promise<string> {
     try {
       const requestBody: OllamaGenerateRequest = {
@@ -64,7 +67,7 @@ export class OllamaService {
           headers: {
             'Content-Type': 'application/json'
           },
-          timeout: 60000 // 60 secondes
+          timeout: 60000
         }
       );
 
@@ -73,7 +76,6 @@ export class OllamaService {
         done: response.data.done
       });
 
-      // Sauvegarder le contexte pour la continuité de la conversation
       if (response.data.context) {
         this.context = response.data.context;
       }
@@ -105,28 +107,63 @@ export class OllamaService {
     }
   }
 
-  /**
-   * Réinitialise le contexte de la conversation
-   */
+  async generateRecipes(ingredients: string[], numberOfRecipes: number = 1): Promise<RecipeResponse> {
+    try {
+      const requestBody: RecipeRequest = {
+        ingredients,
+        number_of_recipes: numberOfRecipes
+      };
+
+      console.log('🍳 Envoi de la requête de recettes:', {
+        url: RECIPE_API_URL,
+        ingredients,
+        numberOfRecipes
+      });
+
+      const response = await axios.post<RecipeResponse>(
+        RECIPE_API_URL,
+        requestBody,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          timeout: 90000
+        }
+      );
+
+      console.log('✅ Recettes reçues:', {
+        recipesCount: response.data.recipes.length
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('❌ Erreur lors de la génération de recettes:', error);
+
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ECONNREFUSED') {
+          throw new Error('Impossible de se connecter au serveur de recettes. Assurez-vous que le serveur est démarré sur le port 4000.');
+        }
+        if (error.response?.data) {
+          throw new Error(`Erreur API recettes (${error.response.status}): ${JSON.stringify(error.response.data)}`);
+        }
+        throw new Error(`Erreur API recettes: ${error.message}`);
+      }
+      throw new Error('Une erreur inattendue s\'est produite lors de la génération de recettes.');
+    }
+  }
+
   resetContext(): void {
     this.context = [];
   }
 
-  /**
-   * Change le modèle utilisé
-   */
   setModel(model: string): void {
     this.model = model;
     this.resetContext();
   }
 
-  /**
-   * Retourne le modèle actuellement utilisé
-   */
   getModel(): string {
     return this.model;
   }
 }
 
-// Instance singleton du service
 export const ollamaService = new OllamaService();
