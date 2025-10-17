@@ -26,7 +26,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-background">
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <motion.div
@@ -41,11 +41,14 @@ export default function HomePage() {
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
           >
-            <ChefHat className="w-24 h-24 text-orange-500 mx-auto" strokeWidth={1.5} />
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full blur-3xl"></div>
+              <ChefHat className="w-24 h-24 text-primary mx-auto relative z-10" strokeWidth={1.5} />
+            </div>
           </motion.div>
 
           <motion.h1
-            className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
+            className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
@@ -54,7 +57,7 @@ export default function HomePage() {
           </motion.h1>
 
           <motion.p
-            className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed"
+            className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
@@ -71,7 +74,7 @@ export default function HomePage() {
             <Button
               size="lg"
               onClick={() => navigate('/chat')}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 gap-3"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 gap-3"
             >
               <MessageCircle className="w-6 h-6" />
               Commencer à discuter
@@ -89,19 +92,19 @@ export default function HomePage() {
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
-              className="bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-shadow duration-300 border border-orange-100"
+              className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-border/50"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
-              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+              whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
-                <feature.icon className="w-8 h-8 text-orange-600" />
+              <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto border border-primary/20">
+                <feature.icon className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">
+              <h3 className="text-xl font-semibold text-foreground mb-3 text-center">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 text-center leading-relaxed">
+              <p className="text-muted-foreground text-center leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>
@@ -115,7 +118,7 @@ export default function HomePage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 0.6 }}
         >
-          <p className="text-gray-500 text-sm">
+          <p className="text-muted-foreground/60 text-sm">
             Propulsé par Pain Web - Votre compagnon culinaire intelligent
           </p>
         </motion.div>
